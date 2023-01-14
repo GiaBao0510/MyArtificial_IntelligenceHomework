@@ -1,45 +1,77 @@
 #include<stdio.h>
 #include<stdlib.h>
-#define tankCapacity_A 10	//Suc chua binh A la 10 lit
-#define tankCapacity_B 2	//Suc chua binh B la 2 lit
-#define tankCapacity_C 5	//Suc chua binh C la 5 lit
-#define tankCapacity_D 6	//Suc chua binh D la 6 lit
-#define empty 0
-#define goal 8				//Muc tieu la dong duoc 8 lit
-//Cau truc luu tru trang thai cac binh
+#include<string.h>
+//Luu trang thai
+	const char *TrangThaiDau[] = {"1","1","1","0","2","2","2",NULL};
+	const char *TrangThaiCuoi[] = {"2","2","2","0","1","1","1",NULL};
+//Cau truc luu tru trang thai cua bai toan
+	#define soPhienDa 7
 	typedef struct{
-		int A,B,C,D;	//Cac binh A,B,C,D
+		int viTri[soPhienDa];	
+		/*Mo ta:
+			- vi tri 0 den 6: 
+			so ech vang o vi tri tu 0,1,2 
+			phien da o vi tri thu 3
+			so ech cam o vi tri thu 4 5 6*/
+		
 	}state;
-	//Khoi tao do day binh A va cac binh con lai thi lam rong 
-	void makeNull(state *St){
-		St->A = tankCapacity_A;
-		St->B = St->C = St->D = 0;
+//khoi tao: ban dau tat ca cac phien da chua co con ech nao
+	void makeNUllState(state *st){
+		int i;
+		for(i=0;i<soPhienDa;i++){
+			st->viTri[i]=0;
+		}
 	}
-//Ham Gan gia tri
-	void assignState(state *St,int x,int y,int z,int r){
-		St->A = x;
-		St->B = y;
-		St->C = z;
-		St->D = r;
+//Trang thai dau: gom cac con vech vang va cam da vao vi tri
+	void firstState(state *st){
+		int i=0;
+		while(TrangThaiDau[i] != NULL){
+			st->viTri[i] = atoi(TrangThaiDau[i]);
+			i++;
+		}
 	}
-//Ham copy trang thai khac
-	void copyOtherStatus(state current,state *result){
-		result->A = current.A;
-		result->B = current.B;
-		result->C = current.C;
-		result->D = current.D;
+//Trang thai dich: gom cac con vech vang va cam da vao dung vi tri can tim
+	void goalState(state *st){
+		int i=0;
+		while(TrangThaiCuoi[i] != NULL){
+			st->viTri[i] = atoi(TrangThaiCuoi[i]);
+			i++;
+		}
 	}
-//Ham in trang thai
-	void printState(state St){
-		printf("\n[A]: %d -- [B]: %d -- [C]: %d -- [D]: %d",St.A,St.B,St.C,St.D);
+//In trang thai
+	void printState(state st){
+		int i;
+		printf("\n");
+		for(i=0;i<soPhienDa;i++){
+			printf("%3d",st.viTri[i]);
+		}
 	}
-//Ham min & max
-	int max(int a,int b){
-		return (a>b)? a:b;
+//so sanh 2 trang thai
+	int compareState(state A,state B){
+		int r = soPhienDa-1,
+			l = 0;
+		while(r>l){
+			if(A.viTri[r] != B.viTri[r]){	//Hai trang thai khac nhau
+				return 1;
+			}
+			if(A.viTri[l] != B.viTri[l]){	//Hai trang thai khac nhau
+				return 1;
+			}
+		}
+		return 0;	//Hai trang thai giong nhau
 	}
-	int min(int a,int b){
-		return (a<b)? a:b;
+//sao chep trang thai khac
+	void copyState(state current,state *result){
+		int i;
+		for(i=0;i<soPhienDa;i++){
+			result->viTri[i] = current.viTri[i];
+		}
 	}
-//Cac phep toan(current: la chi trang thai hien tai cua bai toan .Con )
-	//1.Do binh A sang binh B
-	int pourBottleA_IntoBottleB()	
+int main(){
+	state st1,st2;
+	goalState(&st1);
+	firstState(&st2);
+	printState(st1);
+	printf("\n%d" ,compareState(st1,st2));
+	return 0;	
+}

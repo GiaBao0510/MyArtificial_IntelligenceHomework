@@ -1,6 +1,6 @@
 #include<stdio.h>
 #include<stdlib.h>
-#include<queue>
+#include<stack>
 using namespace std;
 #define tankCapacity_A 10
 #define tankCapacity_B 5
@@ -158,9 +158,9 @@ using namespace std;
 		return head;
 	}
 //Kiem tra trang thai co ton tai trong ngan xep khong
-	int checkStateInQueue(queue<node> S,state X){
+	int checkStateInStack(stack<node> S,state X){
 		while(!S.empty()){
-			if(CompareState(S.front()->TH, X) == 1){
+			if(CompareState(S.top()->TH, X) == 1){
 				return 1;//tim thay
 			}
 			else{
@@ -175,7 +175,7 @@ const char *action[] = {"Trang thai dau","Do binh A sang binh B","Do binh A sang
 //Giai bai toan
 	node DFS(state result){
 		//Tao cac bien
-		queue<node> open,closed;
+		stack<node> open,closed;
 		int opt;
 		state current;
 		node root;
@@ -189,11 +189,11 @@ const char *action[] = {"Trang thai dau","Do binh A sang binh B","Do binh A sang
 		//lap
 		while(!open.empty()){
 			//Lay trang thai dau ra khoi ngan xep open va day vao closed
-			node Fnode = open.front();
+			node Fnode = open.top();
 			open.pop();
 			closed.push(Fnode);
 			CopyOtherState(Fnode->TH,&current);
-			//printf("\n\n\t\tDuyet: [A]: %d -- [B]: %d -- [C]: %d\n",current.a,current.b,current.c);
+				//printf("\n\n\t\tDuyet: [A]: %d -- [B]: %d -- [C]: %d\n",current.a,current.b,current.c);
 			//Kiem tra co phai trang thai dich khong
 			if(CheckGoal(Fnode->TH) == 1){
 				return Fnode;
@@ -201,14 +201,14 @@ const char *action[] = {"Trang thai dau","Do binh A sang binh B","Do binh A sang
 			//Goi cac hanh dong
 			for(opt = 1; opt <=6; opt++){
 				//goi hanh dong cu the
-				//printf("\n\n%d.Xet:",opt);
+					//printf("\n\n%d.Xet:",opt);
 				if(CallOperation(current,&result,opt) == 1){
-					//PrintState(result);
-					if(checkStateInQueue(open,result) == 1 || checkStateInQueue(closed,result) == 1){
+						//PrintState(result);
+					if(checkStateInStack(open,result) == 1 || checkStateInStack(closed,result) == 1){
 						continue; //Da ton tai => bo qua
 					}
-					//printf("\n------------Trang thai moi: ");
-					//PrintState(result);
+						//printf("\n------------Trang thai moi: ");
+						//PrintState(result);
 					node Snode = (node)malloc(sizeof(node));
 					Snode->TH = result;
 					Snode->option = opt;
@@ -219,24 +219,16 @@ const char *action[] = {"Trang thai dau","Do binh A sang binh B","Do binh A sang
 			}
 		}
 	}
-	//Cau truc luu ket qua
-	typedef struct{
-		state ST;
-		int opt;
-	}KetQua;
 	void cachGiai(node P){
+		stack<node> KQ;
 		node Q;
-		int num=0;
-		KetQua KQ[maxlength];
 		for(Q = P; Q != NULL ; Q = Q->next){
-			CopyOtherState(Q->TH,&KQ[num].ST);
-			KQ[num].opt = Q->option;
-			num++;
+			KQ.push(Q);
 		}
-		int i;
-		for(i=num-1;i>=0;i--){
-			printf("\n%s:",action[KQ[i].opt]);
-			PrintState(KQ[i].ST);
+		while(!KQ.empty()){
+			printf("\n%s: ",action[KQ.top()->option]);
+			PrintState(KQ.top()->TH);
+			KQ.pop();
 		}
 	}
 int main(){
